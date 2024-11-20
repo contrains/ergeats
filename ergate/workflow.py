@@ -9,7 +9,7 @@ from typing import (
     overload,
 )
 
-from .exceptions import ErgateError, GoToEnd, GoToStep, SkipNSteps, UnknownStepNameError
+from .exceptions import ErgateError, GoToEnd, GoToStep, ReverseGoToError, SkipNSteps, UnknownStepNameError
 from .workflow_step import WorkflowStep
 
 CallableSpec = ParamSpec("CallableSpec")
@@ -49,14 +49,6 @@ class Workflow:
         initial: bool = False,
         exc: ErgateError | None = None,
     ) -> list[list[WorkflowPathTypeHint]]:
-        # TODO: better way of determining range for infinite loop detection.
-        if depth >= max(len(self) * 5, 100):
-            err = (
-                "Aborting path calculation due to potential infinite loop: "
-                f"(depth: {depth})"
-            )
-            raise RecursionError(err)
-
         if not initial and exc not in self._steps[index].paths:
             err = (
                 f"Failed to calculate workflow path from step {index}: "
@@ -68,6 +60,12 @@ class Workflow:
         paths: list[list[WorkflowPathTypeHint]] = []
 
         next_index = index if initial else self._find_next_step(index, exc)
+
+        if not initial and next_index <= index:
+            raise ReverseGoToError(
+                "User attempted to go to an earlier step, which is not permitted."
+            )
+
         if next_index >= len(self):
             paths.append([current_step])
             return paths
