@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar
 
-from .exceptions import AbortJob, GoToEnd, GoToStep, SkipNSteps
+from .exceptions import AbortJob, GoToEnd, GoToStep, ReverseGoToError, SkipNSteps
 from .handler import ErrorHookHandler
 from .interrupt import DelayedKeyboardInterrupt
 from .job import Job
@@ -35,38 +35,48 @@ class JobRunner(Generic[JobType]):
         self.state_store.update(job)
 
         try:
-            LOG.info("Running %s - input value: %s", str(step_to_run), input_value)
-            with step_to_run.build_args(job.user_context, input_value) as all_args:
-                args, kwargs = all_args
-                retval = step_to_run(*args, **kwargs)
-        except AbortJob as exc:
-            LOG.info("User requested to abort job: %s", exc)
-            job.mark_aborted(exc.message)
-        except GoToEnd as exc:
-            job.mark_step_n_completed(job.steps_completed, exc.retval, len(workflow))
-            info_msg = "User requested to go to end of workflow - return value: %s"
-            LOG.info(info_msg, exc.retval)
-        except GoToStep as exc:
-            if exc.is_index:
-                index = exc.n
-                info_msg = "User requested to go to step: %s - return value: %s"
-                LOG.info(info_msg, index, exc.retval)
-            else:
-                index = workflow.get_index_by_step_name(exc.step_name)
-                info_msg = "User requested to go to step: %s (%s) - return value: %s"
-                LOG.info(info_msg, exc.step_name, index, exc.retval)
+            try:
+                LOG.info("Running %s - input value: %s", str(step_to_run), input_value)
+                with step_to_run.build_args(job.user_context, input_value) as all_args:
+                    args, kwargs = all_args
+                    retval = step_to_run(*args, **kwargs)
+            except AbortJob as exc:
+                LOG.info("User requested to abort job: %s", exc)
+                job.mark_aborted(exc.message)
+            except GoToEnd as exc:
+                job.mark_step_n_completed(job.steps_completed, exc.retval, len(workflow))
+                info_msg = "User requested to go to end of workflow - return value: %s"
+                LOG.info(info_msg, exc.retval)
+            except GoToStep as exc:
+                if exc.is_index:
+                    index = exc.n
+                    info_msg = "User requested to go to step: %s - return value: %s"
+                    LOG.info(info_msg, index, exc.retval)
+                else:
+                    index = workflow.get_index_by_step_name(exc.step_name)
+                    info_msg = "User requested to go to step: %s (%s) - return value: %s"
+                    LOG.info(info_msg, exc.step_name, index, exc.retval)
 
-            job.mark_step_n_completed(index, exc.retval, len(workflow))
-        except SkipNSteps as exc:
-            LOG.info("User requested to skip %d steps", exc.n)
-            job.mark_n_steps_completed(exc.n + 1, exc.retval, len(workflow))
+                if index <= job.current_step:
+                    raise ReverseGoToError(
+                        "User attempted to go to an earlier step, which is not permitted."
+                    )
+
+                job.mark_step_n_completed(index, exc.retval, len(workflow))
+            except SkipNSteps as exc:
+                LOG.info("User requested to skip %d steps", exc.n)
+                job.mark_n_steps_completed(exc.n + 1, exc.retval, len(workflow))
+            except Exception as exc:
+                # Since `except GoToStep` potentially raises an exception, the logic
+                # for handling exceptions had to be moved to a higher scope.
+                raise exc
+            else:
+                LOG.info("Step completed successfully - return value: %s", retval)
+                job.mark_n_steps_completed(1, retval, len(workflow))
         except Exception as exc:
             LOG.exception("Job raised an exception")
             job.mark_failed(exc)
             self.error_hook_handler.notify(job, exc)
-        else:
-            LOG.info("Step completed successfully - return value: %s", retval)
-            job.mark_n_steps_completed(1, retval, len(workflow))
 
         self.state_store.update(job)
 
