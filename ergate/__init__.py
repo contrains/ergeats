@@ -7,6 +7,7 @@ from .exceptions import (
     GoToStep,
     InvalidDefinitionError,
     SkipNSteps,
+    UnknownStepNameError,
     ValidationError,
 )
 from .job import Job
@@ -23,6 +24,7 @@ __all__ = [
     "ErgateError",
     "InvalidDefinitionError",
     "AbortJob",
+    "UnknownStepNameError",
     "GoToEnd",
     "GoToStep",
     "SkipNSteps",

@@ -1,5 +1,6 @@
 from typing import Callable, Iterator, ParamSpec, TypeVar
 
+from .exceptions import UnknownStepNameError
 from .workflow_step import WorkflowStep
 
 CallableSpec = ParamSpec("CallableSpec")
@@ -32,7 +33,7 @@ class Workflow:
         try:
             return self._step_names[step_name]
         except KeyError:
-            raise KeyError(
+            raise UnknownStepNameError(
                 f'No step named "{step_name}" is registered in '
                 f'Workflow "{self.unique_name}"'
             )
