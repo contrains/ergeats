@@ -32,11 +32,7 @@ class GoToStepPath(WorkflowPath):
 
 
 class NextStepPath(WorkflowPath):
-    """WorkflowPath class for the default function `return`."""
-
-
-class ReturnPath(NextStepPath):
-    ...
+    """WorkflowPath class for the default `return` from function."""
 
 
 class SkipNStepsPath(WorkflowPath):

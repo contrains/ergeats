@@ -58,12 +58,15 @@ class JobRunner(Generic[JobType]):
                     LOG.info(info_msg, index, exc.retval)
                 else:
                     index = workflow.get_index_by_step_name(exc.step_name)
-                    info_msg = "User requested to go to step: %s (%s) - return value: %s"
+                    info_msg = (
+                        "User requested to go to step: %s (%s) - return value: %s"
+                    )
                     LOG.info(info_msg, exc.step_name, index, exc.retval)
 
                 if index <= job.current_step:
                     raise ReverseGoToError(
-                        "User attempted to go to an earlier step, which is not permitted."
+                        "User attempted to go to an earlier step, "
+                        "which is not permitted."
                     )
 
                 remaining_steps = max(
@@ -76,15 +79,25 @@ class JobRunner(Generic[JobType]):
                     default=0,
                 )
 
-                job.mark_step_n_completed(index, exc.retval, job.steps_completed + remaining_steps)
+                job.mark_step_n_completed(
+                    index, exc.retval, job.steps_completed + remaining_steps
+                )
             except SkipNSteps as exc:
                 LOG.info("User requested to skip %d steps", exc.n)
 
                 remaining_steps = max(
-                    (len(path) for path in paths if isinstance(path[0][0], SkipNStepsPath) and path[0][0].n == exc.n),
-                    default=0, )
+                    (
+                        len(path)
+                        for path in paths
+                        if isinstance(path[0][0], SkipNStepsPath)
+                        and path[0][0].n == exc.n
+                    ),
+                    default=0,
+                )
 
-                job.mark_n_steps_completed(exc.n + 1, exc.retval, job.steps_completed + remaining_steps)
+                job.mark_n_steps_completed(
+                    exc.n + 1, exc.retval, job.steps_completed + remaining_steps
+                )
             except Exception as exc:
                 # Since `except GoToStep` potentially raises an exception, the logic
                 # for handling exceptions had to be moved to a higher scope.
@@ -93,10 +106,13 @@ class JobRunner(Generic[JobType]):
                 LOG.info("Step completed successfully - return value: %s", retval)
 
                 remaining_steps = max(
-                    map(len, filter(lambda steps: steps[0][0] is None, paths)), default=0
+                    map(len, filter(lambda steps: steps[0][0] is None, paths)),
+                    default=0,
                 )
 
-                job.mark_n_steps_completed(1, retval, job.steps_completed + remaining_steps)
+                job.mark_n_steps_completed(
+                    1, retval, job.steps_completed + remaining_steps
+                )
         except Exception as exc:
             LOG.exception("Job raised an exception")
             job.mark_failed(exc)
