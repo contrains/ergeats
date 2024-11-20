@@ -30,7 +30,6 @@ class JobRunner(Generic[JobType]):
 
         workflow = self.workflow_registry[job.workflow_name]
         step_to_run = workflow[job.current_step]
-        paths = workflow.calculate_paths(job.current_step)
 
         job.mark_running(step_to_run)
         self.state_store.update(job)
@@ -44,69 +43,30 @@ class JobRunner(Generic[JobType]):
             LOG.info("User requested to abort job: %s", exc)
             job.mark_aborted(exc.message)
         except GoToEnd as exc:
-            job.mark_step_n_completed(
-                job.steps_completed, exc.retval, job.steps_completed + 1
-            )
-            LOG.info(
-                "User requested to go to end of workflow - return value: %s",
-                exc.retval,
-            )
+            job.mark_step_n_completed(job.steps_completed, exc.retval, len(workflow))
+            info_msg = "User requested to go to end of workflow - return value: %s"
+            LOG.info(info_msg, exc.retval)
         except GoToStep as exc:
             if exc.is_index:
                 index = exc.n
-                LOG.info(
-                    "User requested to go to step: %s - return value: %s",
-                    index,
-                    exc.retval,
-                )
+                info_msg = "User requested to go to step: %s - return value: %s"
+                LOG.info(info_msg, index, exc.retval)
             else:
                 index = workflow.get_index_by_step_name(exc.step_name)
-                LOG.info(
-                    "User requested to go to step: %s (%s) - return value: %s",
-                    exc.step_name,
-                    index,
-                    exc.retval,
-                )
+                info_msg = "User requested to go to step: %s (%s) - return value: %s"
+                LOG.info(info_msg, exc.step_name, index, exc.retval)
 
-            remaining_steps = max(
-                (
-                    len(path)
-                    for path in paths
-                    if isinstance(path[0][0], GoToStep)
-                    and path[0][0].value == exc.value
-                ),
-                default=0,
-            )
-
-            job.mark_step_n_completed(
-                index, exc.retval, job.steps_completed + remaining_steps
-            )
+            job.mark_step_n_completed(index, exc.retval, len(workflow))
         except SkipNSteps as exc:
             LOG.info("User requested to skip %d steps", exc.n)
-
-            remaining_steps = max(
-                (
-                    len(path)
-                    for path in paths
-                    if isinstance(path[0][0], SkipNSteps) and path[0][0].n == exc.n
-                ),
-                default=0,
-            )
-
-            job.mark_n_steps_completed(
-                exc.n + 1, exc.retval, job.steps_completed + remaining_steps
-            )
+            job.mark_n_steps_completed(exc.n + 1, exc.retval, len(workflow))
         except Exception as exc:
             LOG.exception("Job raised an exception")
             job.mark_failed(exc)
             self.error_hook_handler.notify(job, exc)
         else:
             LOG.info("Step completed successfully - return value: %s", retval)
-            remaining_steps = max(
-                map(len, filter(lambda steps: steps[0][0] is None, paths)), default=0
-            )
-
-            job.mark_n_steps_completed(1, retval, job.steps_completed + remaining_steps)
+            job.mark_n_steps_completed(1, retval, len(workflow))
 
         self.state_store.update(job)
 
