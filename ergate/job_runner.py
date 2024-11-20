@@ -5,6 +5,7 @@ from .handler import ErrorHookHandler
 from .interrupt import DelayedKeyboardInterrupt
 from .job import Job
 from .log import LOG
+from .paths import GoToStepPath, SkipNStepsPath
 from .queue import QueueProtocol
 from .state_store import StateStoreProtocol
 from .workflow_registry import WorkflowRegistry
@@ -69,7 +70,7 @@ class JobRunner(Generic[JobType]):
                     (
                         len(path)
                         for path in paths
-                        if isinstance(path[0][0], GoToStep)
+                        if isinstance(path[0][0], GoToStepPath)
                         and path[0][0].value == exc.value
                     ),
                     default=0,
@@ -80,7 +81,7 @@ class JobRunner(Generic[JobType]):
                 LOG.info("User requested to skip %d steps", exc.n)
 
                 remaining_steps = max(
-                    (len(path) for path in paths if isinstance(path[0][0], SkipNSteps) and path[0][0].n == exc.n),
+                    (len(path) for path in paths if isinstance(path[0][0], SkipNStepsPath) and path[0][0].n == exc.n),
                     default=0, )
 
                 job.mark_n_steps_completed(exc.n + 1, exc.retval, job.steps_completed + remaining_steps)
