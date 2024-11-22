@@ -5,7 +5,7 @@ from .handler import ErrorHookHandler
 from .interrupt import DelayedKeyboardInterrupt
 from .job import Job
 from .log import LOG
-from .paths import GoToStepPath, SkipNStepsPath
+from .paths import GoToStepPath, NextStepPath, SkipNStepsPath
 from .queue import QueueProtocol
 from .state_store import StateStoreProtocol
 from .workflow_registry import WorkflowRegistry
@@ -106,7 +106,11 @@ class JobRunner(Generic[JobType]):
                 LOG.info("Step completed successfully - return value: %s", retval)
 
                 remaining_steps = max(
-                    map(len, filter(lambda steps: steps[0][0] is None, paths)),
+                    (
+                        len(path)
+                        for path in paths
+                        if isinstance(path[0][0], NextStepPath)
+                    ),
                     default=0,
                 )
 
