@@ -163,3 +163,6 @@ utilising this feature to define the `paths` each step may follow in the `step()
 calculate and predict values for `percent_completed` and `total_steps`.  Although they will still not always be fully 
 accurate, they will be progressive (never reducing back to a lower count of steps completed) and grow in accuracy as 
 the workflow progresses. 
+* In order to protect against infinite loops with `GoToStep`, the workflow job runner and path prediction routines are 
+designed to abort if a workflow has, or is capable of having in one of its potential paths, more than 10 times the 
+total number of defined steps in the workflow, or 100, whichever is larger.  (Precisely: `max(len(workflow) * 10, 100)`)

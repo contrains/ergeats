@@ -50,10 +50,18 @@ class Workflow:
         self,
         index: int,
         *,
+        depth: int = 0,
         initial: bool = False,
         path: WorkflowPath | None = None,
     ) -> list[list[WorkflowPathTypeHint]]:
         paths: list[list[WorkflowPathTypeHint]] = []
+
+        if depth >= max(len(self) * 10, 100):
+            err = (
+                "Aborting path calculation due to potential infinite loop: "
+                f"(depth: {depth})"
+            )
+            raise RecursionError(err)
 
         if not initial:
             if path is None:
@@ -82,7 +90,7 @@ class Workflow:
             return paths
 
         for next_path in self._steps[next_index].paths:
-            paths += self._calculate_paths(next_index, path=next_path)
+            paths += self._calculate_paths(next_index, depth=depth + 1, path=next_path)
 
         if not initial:
             paths = [[current_step, *next_path] for next_path in paths]

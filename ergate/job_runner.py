@@ -33,6 +33,13 @@ class JobRunner(Generic[JobType]):
         step_to_run = workflow[job.current_step]
         paths = workflow.calculate_paths(job.current_step)
 
+        if job.steps_completed >= max(len(workflow) * 10, 100):
+            err = (
+                "Aborting workflow due to potential infinite loop: "
+                f"(steps: {job.steps_completed})"
+            )
+            raise RecursionError(err)
+
         job.mark_running(step_to_run)
         self.state_store.update(job)
 
