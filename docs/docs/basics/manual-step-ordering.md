@@ -25,7 +25,12 @@ def step_1() -> None:
 @workflow.step
 def step_2() -> None:
     print("Hello, I am step 2")
-    raise GoToStep("step_4")
+    raise GoToStep("step_3")
+
+@workflow.step
+def step_5() -> None:
+    print("Hello, I am step 5")
+    raise GoToEnd()
 
 @workflow.step
 def step_3() -> None:
@@ -35,26 +40,23 @@ def step_3() -> None:
 def step_4() -> None:
     print("Hello, I am step 4")
     raise GoToStep("step_5")
-
-@workflow.step
-def step_5() -> None:
-    print("Hello, I am step 5")
-    raise GoToEnd()
 ```
 
-`step_1` and `step_2` execute in normal sequence order.  However, `step_2` raises the `GoToStep` exception for `step_4`,
-which alters the execution order.  `step_3` is skipped, and the workflow proceeds directly to `step_4`.  `step_4` also 
-raises `GoToStep` for `step_5`, altering the order and proceeding to that function.  Finally, `step_5` executes, and 
-then raises `GoToEnd` to complete the workflow.
+`step_1` and `step_2` execute in normal sequence order.  However, `step_2` raises the `GoToStep` exception for `step_3`,
+which redirects the execution order.  `step_3` executes and then proceeds to `step_4` by normal sequence order, but 
+`step_4` also raises `GoToStep` for `step_5`, redirecting the order back to that function.  Finally, `step_5` executes, 
+and then raises `GoToEnd` to complete the workflow and prevent `step_3` and `step_4` from being run again from the 
+normal function sequencing.
 
 The resulting order is:
 
 1. `step_1`
 2. `step_2`
+3. `step_3`
 4. `step_4`
 5. `step_5`
 
-Without the `GoToStep` exception being utilised, this workflow would execute in the source ordering:
+Without the `GoToStep` and `GoToEnd` exceptions being utilised, this workflow would execute in the source ordering:
 
 1. `step_1`
 2. `step_2`
@@ -62,8 +64,9 @@ Without the `GoToStep` exception being utilised, this workflow would execute in 
 5. `step_4`
 3. `step_5`
 
-This trivial example may seem pointless, as one could readily omit `step_3` and negate the need for manual ordering 
-with these exceptions.  However, these features allow for branching of workflows according to arbitrary conditions.
+This trivial example may seem pointless, as one could readily move `step_5` to the end of the file and negate the need 
+for manual ordering with these exceptions.  However, these features allow for branching of workflows according to 
+arbitrary conditions.
 
 Consider the following bifurcated workflow.
 

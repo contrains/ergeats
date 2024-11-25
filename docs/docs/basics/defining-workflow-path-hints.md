@@ -43,11 +43,11 @@ def step_3(number: int) -> int:
     print("Hello, I am step 3")
     return 3
 
-@workflow.step(paths=[GoToStepPath("step_7"), GoToEndPath()])
+@workflow.step(paths=[GoToStepPath("step_5"), GoToEndPath()])
 def step_4(number: int) -> int:
     print("Hello, I am step 4")
     if number % 2:
-        raise GoToStep("step_7", retval=4)
+        raise GoToStep("step_5", retval=4)
     if number > 6:
         raise GoToEnd()
     return 4
@@ -68,7 +68,7 @@ branching of the paths.  It will then calculate two potential routes for the rem
 paths:
 
 * `('step_1', 'step_2', 'step_3', 'step_4')`
-* `('step_1', 'step_2', 'step_3', 'step_4', 'step_7')`
+* `('step_1', 'step_2', 'step_3', 'step_4', 'step_5')`
 * `('step_1', 'step_2', 'step_3', 'step_4', 'step_6', 'step_7')`
 
 For calculating `percent_completed` and `total_steps`, it will use the longest of the potential branches.
@@ -104,6 +104,16 @@ def step_one() -> None:
     print("Hello, I am step 1.")
     raise GoToStep("step_two")
 
+@workflow.step(paths=[GoToStepPath("step_three")])
+def weekday() -> None:
+    print("Hello, I am the extra weekday step.")
+    raise GoToStep("step_three")
+
+@workflow.step(paths=[GoToStepPath("step_three")])
+def saturday() -> None:
+    print("Hello, I am the extra saturday step.")
+    raise GoToStep("step_three")
+
 @workflow.step(paths=[GoToStepPath("weekday"), GoToStepPath("saturday")])
 def step_two() -> None:
     print("Hello, I am step 2.")
@@ -119,21 +129,6 @@ def step_two() -> None:
         
     print("Today is a Sunday.  Proceed to the next step.")
     return None
-
-@workflow.step(paths=[GoToStepPath("step_three")])
-def sunday() -> None:
-    print("Hello, I am Sunday step.")
-    raise GoToStep("step_three")
-
-@workflow.step(paths=[GoToStepPath("step_three")])
-def weekday() -> None:
-    print("Hello, I am the extra weekday step.")
-    raise GoToStep("step_three")
-
-@workflow.step(paths=[GoToStepPath("step_three")])
-def saturday() -> None:
-    print("Hello, I am the extra saturday step.")
-    raise GoToStep("step_three")
 
 @workflow.step
 def step_three() -> None:
