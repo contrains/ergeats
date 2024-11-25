@@ -163,6 +163,3 @@ utilising this feature to define the `paths` each step may follow in the `step()
 calculate and predict values for `percent_completed` and `total_steps`.  Although they will still not always be fully 
 accurate, they will be progressive (never reducing back to a lower count of steps completed) and grow in accuracy as 
 the workflow progresses. 
-
-* _Nota bene_: it is currently not permitted to use `GoToStep` to go to a previous step in the workflow.  There is no 
-technical reason behind this limitation, and it may be added in a future release.

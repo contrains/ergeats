@@ -9,7 +9,7 @@ from typing import (
     overload,
 )
 
-from .exceptions import ReverseGoToError, UnknownStepNameError
+from .exceptions import UnknownStepNameError
 from .paths import GoToEndPath, GoToStepPath, NextStepPath, SkipNStepsPath, WorkflowPath
 from .workflow_step import WorkflowStep
 
@@ -71,12 +71,6 @@ class Workflow:
                 raise ValueError(err)
 
             next_index = self._find_next_step(index, path)
-
-            if next_index <= index:
-                raise ReverseGoToError(
-                    "User attempted to go to an earlier step, "
-                    "which is not permitted."
-                )
         else:
             path = NextStepPath()
             next_index = index

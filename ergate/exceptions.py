@@ -11,10 +11,6 @@ class InvalidDefinitionError(ErgateError):
     """Raised when a workflow/step definition is invalid."""
 
 
-class ReverseGoToError(ErgateError):
-    """Raised when a workflow/step attempts to `go to` an earlier step."""
-
-
 class UnknownStepNameError(ErgateError):
     """Raised when a workflow/step attempts to `go to` an unknown step."""
 

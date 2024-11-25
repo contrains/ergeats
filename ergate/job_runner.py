@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar
 
-from .exceptions import AbortJob, GoToEnd, GoToStep, ReverseGoToError, SkipNSteps
+from .exceptions import AbortJob, GoToEnd, GoToStep, SkipNSteps
 from .handler import ErrorHookHandler
 from .interrupt import DelayedKeyboardInterrupt
 from .job import Job
@@ -68,12 +68,6 @@ class JobRunner(Generic[JobType]):
                         exc.step_name,
                         index,
                         exc.retval,
-                    )
-
-                if index <= job.current_step:
-                    raise ReverseGoToError(
-                        "User attempted to go to an earlier step, "
-                        "which is not permitted."
                     )
 
                 remaining_steps = max(
