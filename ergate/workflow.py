@@ -90,6 +90,7 @@ class Workflow:
 
         for next_path in self[next_index].paths:
             print("===421.1===", index, depth, "next_path:", next_path)
+            # TODO: Should there be an `if not already in self._paths` to avoid duplicate calcuations?
             paths += self._calculate_paths(next_index, path=next_path, depth=depth + 1)
 
         if not initial:
