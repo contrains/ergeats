@@ -4,12 +4,12 @@ In order to facilitate manually-ordered workflow steps with branching paths, spe
 the total number of steps for the workflow and thereby calculate the completion percentage.
 
 These may be seen as similar to Python type hints, in that they do not directly affect the flow and operation of the 
-workflow, but provide metadata allowing the engine to better determine information about the workflow operaion, viz. the
+workflow, but provide metadata allowing the engine to better determine information about the workflow operation, viz. the
 completion percentage and total steps.
 
 This logic may be enabled by specifying the `paths=` kwarg for a given `@workflow.step()` decorator.
 
-* It is not necessary to specify `paths` for workflow steps which only return a value via `return`, thus maintaining full compatibility with existing code.
+* It is not necessary to specify `paths` for workflow steps which only return a value via `return`.
 * It is suggested to define `paths` for steps which utilise the `SkipNSteps` or `GoToEnd` exceptions. 
 * It is recommended to define `paths` for steps which utilise the `GoToStep` exception, or which have branching logic with multiple potential paths.
 
@@ -31,7 +31,7 @@ def step_1() -> int:
 @workflow.step(paths=[GoToStepPath("step_3")])
 def step_2(number: int) -> None:
     print("Hello, I am step 2")
-    raise GoToStep("step_3", retval=2)
+    raise GoToStep(step_3, retval=2)
 
 @workflow.step(path=[GoToEndPath()])
 def step_5() -> None:
@@ -47,7 +47,7 @@ def step_3(number: int) -> int:
 def step_4(number: int) -> int:
     print("Hello, I am step 4")
     if number % 2:
-        raise GoToStep("step_5", retval=4)
+        raise GoToStep(step_5, retval=4)
     if number > 6:
         raise GoToEnd()
     return 4
@@ -74,7 +74,7 @@ paths:
 For calculating `percent_completed` and `total_steps`, it will use the longest of the potential branches.
 
 When `step_4` is reached and completed, it will then reevaluate the branches to determine which were not taken, and 
-discard them, leaving only the relevant branch(es) for recalcation and refinement of the `percent_completed` and 
+discard them, leaving only the relevant branch(es) for recalculation and refinement of the `percent_completed` and 
 `total_steps` values.
 
 The resulting workflow order from above is:
@@ -94,7 +94,7 @@ the list of paths.
 For example:
 
 ```py title="workflow_with_paths_2.py"
-from ergate import GoToEnd, GoToEndPath, GoToStep, GoToStepPath, NextStepPath, Workflow
+from ergate import GoToEnd, GoToEndPath, GoToStep, GoToStepPath, Workflow
 from datetime import date
 
 workflow = Workflow(unique_name="workflow_with_paths_2")
@@ -102,17 +102,17 @@ workflow = Workflow(unique_name="workflow_with_paths_2")
 @workflow.step(paths=[GoToStepPath("step_two")])
 def step_one() -> None:
     print("Hello, I am step 1.")
-    raise GoToStep("step_two")
+    raise GoToStep(step_two)
 
 @workflow.step(paths=[GoToStepPath("step_three")])
 def weekday() -> None:
     print("Hello, I am the extra weekday step.")
-    raise GoToStep("step_three")
+    raise GoToStep(step_three)
 
 @workflow.step(paths=[GoToStepPath("step_three")])
 def saturday() -> None:
     print("Hello, I am the extra saturday step.")
-    raise GoToStep("step_three")
+    raise GoToStep(step_three)
 
 @workflow.step(paths=[GoToStepPath("weekday"), GoToStepPath("saturday")])
 def step_two() -> None:
@@ -122,10 +122,10 @@ def step_two() -> None:
     
     if today.weekday() < 5:
         print("Today is a weekday.  Do a weekday task.")
-        raise GoToStep("weekday")
+        raise GoToStep(weekday)
     if today.weekday() == 5:
         print("Today is Saturday.  Do a Saturday task.")
-        raise GoToStep("saturday")
+        raise GoToStep(saturday)
         
     print("Today is a Sunday.  Proceed to the next step.")
     return None

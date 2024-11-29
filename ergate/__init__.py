@@ -7,7 +7,7 @@ from .exceptions import (
     GoToStep,
     InvalidDefinitionError,
     SkipNSteps,
-    UnknownStepNameError,
+    UnknownStepError,
     ValidationError,
 )
 from .job import Job
@@ -36,7 +36,7 @@ __all__ = [
     "SkipNSteps",
     "SkipNStepsPath",
     "StateStoreProtocol",
-    "UnknownStepNameError",
+    "UnknownStepError",
     "ValidationError",
     "Workflow",
     "WorkflowStep",
