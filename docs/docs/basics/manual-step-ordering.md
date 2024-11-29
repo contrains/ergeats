@@ -170,4 +170,4 @@ the workflow progresses.
 
 * In order to protect against infinite loops with `GoToStep`, the workflow job runner and path prediction routines are 
 designed to abort if a workflow exceeds more than 10 times the total number of defined steps in the workflow, or 100, 
-whichever is larger.  (Precisely: `max(len(workflow) * 10, 100)`)
+whichever is larger.  (Precisely: `max(len(workflow) * 3, 30)`)

@@ -75,7 +75,7 @@ class Workflow:
         current_step = (path, index)
         paths: list[list[WorkflowPathTypeHint]] = []
 
-        if depth >= max(len(self) * 10, 100):
+        if depth >= max(len(self) * 3, 30):
             LOG.warning(
                 "Aborting current path calculation due to potential infinite loop: "
                 f"(depth: {depth})"

@@ -33,7 +33,7 @@ class JobRunner(Generic[JobType]):
         paths = workflow.paths[job.current_step]
         step_to_run = workflow[job.current_step]
 
-        if job.steps_completed >= max(len(workflow) * 10, 100):
+        if job.steps_completed >= max(len(workflow) * 3, 30):
             err = (
                 "Aborting workflow due to potential infinite loop: "
                 f"(completed steps: {job.steps_completed})"
