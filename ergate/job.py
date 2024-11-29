@@ -54,6 +54,9 @@ class Job(BaseModel):
         total_steps: int,
     ) -> None:
         self.current_step += n
+        # FIXME: Is it possible here, when `paths` are *not* defined (thus `total_steps defaults to len(workflow)`),
+        # to end up with `self.steps_completed == total_steps` prematurely, thus marking the workflow as complete whilst
+        # it is still actually incomplete?  I think if so, this would only affect workflows with negative progression.
         self.steps_completed = min(self.steps_completed + 1, total_steps)
         self.percent_completed = float((self.steps_completed / total_steps) * 100)
         self.status = (
