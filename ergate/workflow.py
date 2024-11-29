@@ -80,18 +80,22 @@ class Workflow:
                 "Aborting current path calculation due to potential infinite loop: "
                 f"(depth: {depth})"
             )
+            print("===411.1===", depth, len(paths), paths)
             return paths
 
         if next_index >= len(self):
             paths.append([current_step])
+            print("===411.2===", depth, len(paths), paths)
             return paths
 
         for next_path in self[next_index].paths:
+            print("===421.1===", depth, next_path)
             paths += self._calculate_paths(next_index, path=next_path, depth=depth + 1)
 
         if not initial:
             paths = [[current_step, *next_path] for next_path in paths]
 
+        print("===411.3===", depth, len(paths), paths)
         return paths
 
     def calculate_paths(self, index: int) -> list[list[WorkflowPathTypeHint]]:
