@@ -36,9 +36,8 @@ class JobRunner(Generic[JobType]):
         if job.steps_completed >= max(len(workflow) * 10, 100):
             err = (
                 "Aborting workflow due to potential infinite loop: "
-                f"(steps: {job.steps_completed})"
+                f"(completed steps: {job.steps_completed})"
             )
-            # TODO: Possibly something to change in here?  Maybe?
             raise RecursionError(err)
 
         job.mark_running(step_to_run)
