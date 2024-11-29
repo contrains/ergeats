@@ -8,6 +8,7 @@ from typing import (
 )
 
 from .exceptions import UnknownStepError
+from .log import LOG
 from .paths import GoToEndPath, GoToStepPath, NextStepPath, SkipNStepsPath, WorkflowPath
 from .workflow_step import WorkflowStep
 
@@ -51,16 +52,6 @@ class Workflow:
         initial: bool = False,
         path: WorkflowPath | None = None,
     ) -> list[list[WorkflowPathTypeHint]]:
-        paths: list[list[WorkflowPathTypeHint]] = []
-
-        if depth >= max(len(self) * 10, 100):
-            err = (
-                "Aborting path calculation due to potential infinite loop: "
-                f"(depth: {depth})"
-            )
-            # TODO: path calculation should only stop [for this one path only] and omit a warning, not abort the workflow.
-            raise RecursionError(err)
-
         if not initial:
             if path is None:
                 err = (
@@ -83,6 +74,13 @@ class Workflow:
 
         current_step = (path, index)
         paths: list[list[WorkflowPathTypeHint]] = []
+
+        if depth >= max(len(self) * 10, 100):
+            LOG.warning(
+                "Aborting current path calculation due to potential infinite loop: "
+                f"(depth: {depth})"
+            )
+            return paths
 
         if next_index >= len(self):
             paths.append([current_step])
