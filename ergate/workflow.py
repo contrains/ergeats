@@ -115,14 +115,18 @@ class Workflow:
             print("===421.1===", [index, depth], "next_path:", next_path)
 
             # TODO: Should there be an `if not already in self._paths` to avoid duplicate calculations?
-            paths += self._calculate_paths(next_index, path=next_path, depth=depth + 1)
-            print("===111.14===", [index, depth], len(paths))
+            if next_path in self.paths:
+                paths += self.paths[next_path]
+                print("===111.14===", [index, depth], len(paths))
+            else:
+                paths += self._calculate_paths(next_index, path=next_path, depth=depth + 1)
+                print("===111.15===", [index, depth], len(paths))
 
         if not initial:
             paths = [[current_step, *next_path] for next_path in paths]
-            print("===111.15===", [index, depth], len(paths))
+            print("===111.16===", [index, depth], len(paths))
 
-        print("===111.16===", [index, depth], len(paths))
+        print("===111.17===", [index, depth], len(paths))
         print("===411.3===", [index, depth], len(paths), [[p[1] for p in path] for path in paths])
         return paths
 
@@ -134,7 +138,13 @@ class Workflow:
         return paths
 
     def update_paths(self) -> None:
-        self._paths = {step.index: self.calculate_paths(step.index) for step in self}
+        self._paths = {}
+
+        for step in self:
+            pass
+
+        for step in reversed(self):
+            self.paths[step.index] = self.calculate_paths(step.index)
 
     def _find_next_step(self, index: int, path: WorkflowPath) -> int:
         if isinstance(path, GoToEndPath):
