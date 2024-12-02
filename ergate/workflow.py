@@ -115,6 +115,7 @@ class Workflow:
             print("===421.1===", [index, depth], "next_path:", next_path)
 
             # TODO: Should there be an `if not already in self._paths` to avoid duplicate calculations?
+            print("===421.2===", list(self.paths.keys()))
             if next_path in self.paths:
                 paths += self.paths[next_path]
                 print("===111.14===", [index, depth], len(paths))
