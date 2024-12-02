@@ -58,7 +58,7 @@ class Workflow:
             print("===111.02===", [index, depth])
 
             if path is None:
-                print("===111.03==", [index, depth])
+                print("===111.03===", [index, depth])
 
                 err = (
                     f"Failed to calculate workflow path from step {index}: "
@@ -66,10 +66,10 @@ class Workflow:
                 )
                 raise ValueError(err)
 
-            print("===111.04==", [index, depth])
+            print("===111.04===", [index, depth])
 
             if path not in self[index].paths:
-                print("===111.05==", [index, depth])
+                print("===111.05===", [index, depth])
 
                 err = (
                     f"Failed to calculate workflow path from step {index}: "
@@ -77,24 +77,24 @@ class Workflow:
                 )
                 raise ValueError(err)
 
-            print("===111.06==", [index, depth])
+            print("===111.06===", [index, depth])
 
             next_index = self._find_next_step(index, path)
         else:
-            print("===111.07==", [index, depth])
+            print("===111.07===", [index, depth])
 
             path = NextStepPath()
             next_index = index
 
-        print("===111.08==", [index, depth], next_index)
+        print("===111.08===", [index, depth], next_index)
 
         current_step = (path, index)
         paths: list[list[WorkflowPathTypeHint]] = []
 
-        print("===111.09==", [index, depth], current_step)
+        print("===111.09===", [index, depth], current_step)
 
         if depth >= max(len(self) * 3, 30):
-            print("===111.10==", [index, depth], max(len(self) * 3, 30))
+            print("===111.10===", [index, depth], max(len(self) * 3, 30))
             LOG.warning(
                 "Aborting current path calculation due to potential infinite loop: "
                 f"(depth: {depth})"
