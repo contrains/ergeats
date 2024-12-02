@@ -44,6 +44,24 @@ class Workflow:
     def paths(self) -> dict[int, list[list[WorkflowPathTypeHint]]]:
         return self._paths
 
+    def _get_paths(self, index: int, next_path: WorkflowPath) -> list[list[WorkflowPathTypeHint]]:
+        if index not in self.paths:
+            err = f"No calculated workflow paths found for step {index}"
+            raise ValueError(err)
+
+        if next_path not in self[index].paths:
+            err = (
+                f"Failed to get workflow path from step {index}: "
+                f"path not registered: {next_path}"
+            )
+            raise ValueError(err)
+
+        return [
+            path for path in self.paths[index]
+            if isinstance(path, type(next_path))
+            and path.value == next_path.value
+        ]
+
     def _calculate_paths(
         self,
         index: int,
@@ -115,19 +133,22 @@ class Workflow:
             print("===421.1===", [index, depth], "next_path:", next_path)
 
             # TODO: Should there be an `if not already in self._paths` to avoid duplicate calculations?
-            print("===421.2===", list(self.paths.keys()))
-            if next_path in self.paths:
-                paths += self.paths[next_path]
+            print("===421.2===", next_index, next_index in self.paths, list(self.paths.keys()))
+            if next_index in self.paths:
                 print("===111.14===", [index, depth], len(paths))
-            else:
-                paths += self._calculate_paths(next_index, path=next_path, depth=depth + 1)
+                paths += self._get_paths(next_index, next_path)
+                print("===421.3===", self._get_paths(next_index, next_path))
                 print("===111.15===", [index, depth], len(paths))
+            else:
+                print("===111.16===", [index, depth], len(paths))
+                paths += self._calculate_paths(next_index, path=next_path, depth=depth + 1)
+                print("===111.17===", [index, depth], len(paths))
 
         if not initial:
             paths = [[current_step, *next_path] for next_path in paths]
-            print("===111.16===", [index, depth], len(paths))
+            print("===111.18===", [index, depth], len(paths))
 
-        print("===111.17===", [index, depth], len(paths))
+        print("===111.19===", [index, depth], len(paths))
         print("===411.3===", [index, depth], len(paths), [[p[1] for p in path] for path in paths])
         return paths
 
