@@ -17,7 +17,7 @@ class GoToStepPath(WorkflowPath):
         self.step_name = step_name
 
     @property
-    def value(self):
+    def value(self) -> str:
         return self.step_name
 
 
@@ -32,5 +32,5 @@ class SkipNStepsPath(WorkflowPath):
         self.n = n
 
     @property
-    def value(self):
+    def value(self) -> int:
         return self.n
