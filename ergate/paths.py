@@ -12,6 +12,10 @@ class GoToStepPath(WorkflowPath):
     def __init__(self, step_name: str) -> None:
         self.step_name = step_name
 
+    @property
+    def value(self):
+        return self.step_name
+
 
 class NextStepPath(WorkflowPath):
     """WorkflowPath class for the default `return` from function."""
@@ -22,3 +26,7 @@ class SkipNStepsPath(WorkflowPath):
 
     def __init__(self, n: int) -> None:
         self.n = n
+
+    @property
+    def value(self):
+        return self.n
