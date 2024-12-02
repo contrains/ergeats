@@ -134,7 +134,7 @@ class Workflow:
 
         print("===110.1===", index)
         paths = self._calculate_paths(index, initial=True)
-        print("===110.1===", len(paths), [[p[1] for p in path] for path in paths])
+        print("===110.2===", index, len(paths), [[p[1] for p in path] for path in paths])
         return paths
 
     def update_paths(self) -> None:
