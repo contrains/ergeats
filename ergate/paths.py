@@ -1,6 +1,10 @@
 class WorkflowPath:
     """Base class for workflow paths."""
 
+    @property
+    def value(self) -> None:
+        return None
+
 
 class GoToEndPath(WorkflowPath):
     """WorkflowPath class for the `GoToEnd` exception."""
