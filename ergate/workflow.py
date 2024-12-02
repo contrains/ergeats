@@ -129,7 +129,9 @@ class Workflow:
     def calculate_paths(self, index: int) -> list[list[WorkflowPathTypeHint]]:
 
         print("===110.1===", index)
-        return self._calculate_paths(index, initial=True)
+        paths = self._calculate_paths(index, initial=True)
+        print("===110.1===", len(paths), [[p[1] for p in path] for path in paths])
+        return paths
 
     def update_paths(self) -> None:
         self._paths = {step.index: self.calculate_paths(step.index) for step in self}
