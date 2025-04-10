@@ -38,6 +38,7 @@ A `Job` can have any of the following statuses:
 - `JobStatus.FAILED`
 - `JobStatus.ABORTED`
 - `JobStatus.CANCELLING`
+- `JobStatus.CANCELLED`
 
 
 ## Triggering/creating a job
