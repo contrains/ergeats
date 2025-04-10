@@ -9,3 +9,4 @@ class JobStatus(IntEnum):
     COMPLETED = auto()
     FAILED = auto()
     ABORTED = auto()
+    CANCELLING = auto()
