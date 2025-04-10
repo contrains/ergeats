@@ -31,6 +31,7 @@ Here is a summary of all the attributes of the `Job` model.
 A `Job` can have any of the following statuses:
 
 - `JobStatus.SCHEDULED`
+- `JobStatus.PENDING`
 - `JobStatus.QUEUED`
 - `JobStatus.RUNNING`
 - `JobStatus.COMPLETED`
