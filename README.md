@@ -1,7 +1,7 @@
-# Ergeats
+  So I'm acutely familiar with how it works.# Ergeats
 Workflows made easy, just the way Erg likes them.
 
-![Erg eats.  Ergate.](https://github.com/contrains/ergeats/blob/main/docs/docs/img/ergeats-logo.png?raw=true)
+![Erg eats.  Ergate.](https://github.com/contrains/ergeats/blob/Modified_Ergeats_Labels_and_Readme/docs/docs/img/ergeats-logo.png?raw=true)
 
 Ergeats is the spiritual successor of Ergate, ever since its developer disappeared and the original project became dormant.
 
