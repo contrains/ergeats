@@ -1,4 +1,3 @@
-  So I'm acutely familiar with how it works.# Ergeats
 Workflows made easy, just the way Erg likes them.
 
 ![Erg eats.  Ergate.](https://github.com/contrains/ergeats/blob/Modified_Ergeats_Labels_and_Readme/docs/docs/img/ergeats-logo.png?raw=true)
