@@ -91,7 +91,7 @@ class JobRunner(Generic[JobType]):
                 exc.step.index,
                 exc.retval,
                 job.steps_completed + remaining_steps,
-                requested_start_time=exc.delay if exc.delay else None,
+                requested_start_time=exc.delay or None,
             )
         else:
             LOG.info("Step completed successfully - return value: %s", retval)
