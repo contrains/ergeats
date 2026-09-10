@@ -69,7 +69,7 @@ class JobRunner(Generic[JobType]):
                 "User requested to go to step %s (%d)%s - return value: %s",
                 exc.step.name,
                 exc.step.index,
-                f" after {exc.delay.total_seconds()} seconds" if exc.delay else None,
+                f" after {int(exc.delay.total_seconds())} seconds" if exc.delay else "",
                 exc.retval,
             )
 
