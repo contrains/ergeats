@@ -66,9 +66,10 @@ class JobRunner(Generic[JobType]):
             )
         except GoToStep as exc:
             LOG.info(
-                "User requested to go to step: %s (%d) - return value: %s",
+                "User requested to go to step %s (%d)%s - return value: %s",
                 exc.step.name,
                 exc.step.index,
+                f" after {exc.delay.total_seconds()} seconds" if exc.delay else None,
                 exc.retval,
             )
 
