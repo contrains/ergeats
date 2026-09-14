@@ -52,9 +52,9 @@ class GoToStep(ErgateError):  # noqa: N818
         retval: Any = None,
         after_seconds: int = 0,
     ) -> None:
+        self.delay = timedelta(seconds=after_seconds)
         self.retval = retval
         self.step = step
-        self.delay = timedelta(seconds=after_seconds)
 
 
 class RetryStepAfterSeconds(ErgateError):  # noqa: N818

@@ -82,10 +82,7 @@ class JobRunner(Generic[JobType]):
                 exc.retval,
             )
 
-            requested_start_time = None
-
             if exc.delay:
-                requested_start_time = datetime.now(timezone.utc) + exc.delay
                 LOG.info(
                     "User requested a delay of %d seconds.",
                     exc.delay.total_seconds(),
@@ -110,7 +107,9 @@ class JobRunner(Generic[JobType]):
                 exc.step.index,
                 exc.retval,
                 job.steps_completed + remaining_steps,
-                requested_start_time=requested_start_time,
+                requested_start_time=(
+                    datetime.now(timezone.utc) + exc.delay if exc.delay else None
+                ),
             )
         else:
             LOG.info("Step completed successfully - return value: %s", retval)
