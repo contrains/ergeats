@@ -58,7 +58,8 @@ class JobRunner(Generic[JobType]):
 
             if exc.delay:
                 LOG.info(
-                    "User requested a delay of %d seconds.", exc.delay.total_seconds()
+                    "User requested a delay of %d seconds.",
+                    exc.delay.total_seconds(),
                 )
 
             job.mark_scheduled(
@@ -86,7 +87,8 @@ class JobRunner(Generic[JobType]):
             if exc.delay:
                 requested_start_time = datetime.now(timezone.utc) + exc.delay
                 LOG.info(
-                    "User requested a delay of %d seconds.", exc.delay.total_seconds()
+                    "User requested a delay of %d seconds.",
+                    exc.delay.total_seconds(),
                 )
 
             if exc.step.index <= job.current_step:
