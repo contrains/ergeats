@@ -50,10 +50,15 @@ class JobRunner(Generic[JobType]):
             job.mark_aborted(exc.message)
         except RetryStepAfterSeconds as exc:
             LOG.info(
-                "User requested to retry step after %d seconds - return value: %s",
-                exc.delay.total_seconds(),
+                "User requested to retry step %s - return value: %s",
+                str(step_to_run),
                 exc.retval,
             )
+
+            if exc.delay:
+                LOG.info(
+                    "User requested a delay of %d seconds.", exc.delay.total_seconds()
+                )
 
             job.mark_scheduled(exc.delay, exc.retval)
         except GoToEnd as exc:
@@ -66,12 +71,16 @@ class JobRunner(Generic[JobType]):
             )
         except GoToStep as exc:
             LOG.info(
-                "User requested to go to step %s (%d)%s - return value: %s",
+                "User requested to go to step %s (%d) - return value: %s",
                 exc.step.name,
                 exc.step.index,
-                f" after {int(exc.delay.total_seconds())} seconds" if exc.delay else "",
                 exc.retval,
             )
+
+            if exc.delay:
+                LOG.info(
+                    "User requested a delay of %d seconds.", exc.delay.total_seconds()
+                )
 
             if exc.step.index <= job.current_step:
                 raise ReverseGoToError(
