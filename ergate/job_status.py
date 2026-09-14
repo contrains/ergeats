@@ -67,6 +67,6 @@ class JobStatus(IntEnum):
 
     INTERRUPTED = auto()
     """
-    Job was interrupted externally and outside of the control
-    of the publisher.
+    Job required external intervention and is no longer
+    controller by Ergate.
     """
