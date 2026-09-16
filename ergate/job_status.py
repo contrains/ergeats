@@ -64,3 +64,9 @@ class JobStatus(IntEnum):
     Job was marked for cancellation and has now reached
     a state where no further steps will run.
     """
+
+    INTERRUPTED = auto()
+    """
+    Job required external intervention and is no longer
+    controlled by Ergate.
+    """
