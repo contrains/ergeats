@@ -68,5 +68,5 @@ class JobStatus(IntEnum):
     INTERRUPTED = auto()
     """
     Job required external intervention and is no longer
-    controller by Ergate.
+    controlled by Ergate.
     """
