@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Generic, TypeVar
 
 from ..exceptions import (
@@ -39,7 +39,11 @@ class JobRunner(Generic[JobType]):
     def _run_job(self, job: JobType, step_to_run: WorkflowStep) -> None:
         input_value = job.get_input_value()
 
-        LOG.info("Running %s - input value: %s", str(step_to_run), input_value)
+        LOG.info(
+            "Running %s - input value: %s",
+            step_to_run,
+            input_value,
+        )
 
         try:
             with step_to_run.build_args(job, input_value) as all_args:
@@ -51,13 +55,19 @@ class JobRunner(Generic[JobType]):
             job.mark_aborted(exc.message)
         except RetryStepAfterSeconds as exc:
             LOG.info(
-                "User requested to retry step after %d seconds - return value: %s",
-                exc.seconds,
+                "User requested to retry step %s - return value: %s",
+                step_to_run,
                 exc.retval,
             )
 
+            if exc.delay:
+                LOG.info(
+                    "User requested a delay of %d seconds.",
+                    exc.delay.total_seconds(),
+                )
+
             job.mark_scheduled(
-                datetime.now(timezone.utc) + timedelta(seconds=exc.seconds),
+                datetime.now(timezone.utc) + exc.delay,
                 exc.retval,
             )
         except GoToEnd as exc:
@@ -70,11 +80,17 @@ class JobRunner(Generic[JobType]):
             )
         except GoToStep as exc:
             LOG.info(
-                "User requested to go to step: %s (%d) - return value: %s",
+                "User requested to go to step %s (%d) - return value: %s",
                 exc.step.name,
                 exc.step.index,
                 exc.retval,
             )
+
+            if exc.delay:
+                LOG.info(
+                    "User requested a delay of %d seconds.",
+                    exc.delay.total_seconds(),
+                )
 
             if exc.step.index <= job.current_step:
                 raise ReverseGoToError(
@@ -95,6 +111,9 @@ class JobRunner(Generic[JobType]):
                 exc.step.index,
                 exc.retval,
                 job.steps_completed + remaining_steps,
+                requested_start_time=(
+                    datetime.now(timezone.utc) + exc.delay if exc.delay else None
+                ),
             )
         else:
             LOG.info("Step completed successfully - return value: %s", retval)
