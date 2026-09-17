@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Any
 
 from pydantic import ValidationError  # noqa: F401
@@ -15,6 +16,10 @@ class InvalidDefinitionError(ErgateError):
 
 class ReverseGoToError(ErgateError):
     """Raised when a workflow/step attempts to `go to` an earlier step."""
+
+
+class UnknownWorkflowError(ErgateError):
+    """Raised when a job attempts to run an unknown workflow."""
 
 
 class UnknownStepError(ErgateError):
@@ -40,6 +45,26 @@ class GoToEnd(ErgateError):  # noqa: N818
 class GoToStep(ErgateError):  # noqa: N818
     """Raised from a step to go to a specific step by its index or string label."""
 
-    def __init__(self, step: WorkflowStep, *, retval: Any = None) -> None:
+    def __init__(
+        self,
+        step: WorkflowStep,
+        *,
+        retval: Any = None,
+        after_seconds: int = 0,
+    ) -> None:
+        self.delay = timedelta(seconds=after_seconds)
         self.retval = retval
         self.step = step
+
+
+class RetryStepAfterSeconds(ErgateError):  # noqa: N818
+    """Raised from a step to retry the current step after a delay in seconds."""
+
+    def __init__(
+        self,
+        seconds: int,
+        *,
+        retval: Any = None,
+    ) -> None:
+        self.delay = timedelta(seconds=seconds)
+        self.retval = retval

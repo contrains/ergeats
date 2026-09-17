@@ -8,7 +8,7 @@ name = "ergate"
 requires-python = ">=3.10"
 description = "Workflows made easy, your way"
 readme = { file = "README.md", content-type = "text/markdown" }
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 authors = [{ name = "prryplatypus" }]
 keywords = ["workflow", "worker"]
 classifiers = [
@@ -16,7 +16,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python",
@@ -31,9 +30,11 @@ dependencies = [
 dynamic = ["version"]
 
 
-[tool.setuptools]
-packages = ["ergate"]
+# [project.scripts]
+# ergate = "ergate.cli.entrypoint:run"
 
+[tool.setuptools.packages.find]
+include = ["ergate*"]
 
 [project.urls]
 Repository = "https://github.com/prryplatypus/ergate"
